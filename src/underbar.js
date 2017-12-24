@@ -52,7 +52,7 @@
   //
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
-  _.each = function(collection, iterator) {
+  _.each = function(collection, iterator, context) {
     if (Array.isArray(collection)) {
       for (let i = 0; i < collection.length; i+=1) {
         iterator(collection[i], i, collection);
@@ -98,15 +98,6 @@
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
-/*    
-    let result = [];
-    _.each(collection, function(elem) {
-      if (test(elem)) {
-        result[result.length] = elem;
-      }
-    });
-    return result;
-*/    
 
     let result = [];
     _.each(collection, function(elem, index, collection) {
@@ -136,30 +127,30 @@
 */
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
-    let arr = [];
-    let holderArr;
+    let result = [];
+    let holderArr = [];
 
-    isSorted ? holderArr = array.slice() : holderArr = array.slice().sort()
-
-    if (iterator === undefined) {
+    if (iterator) {
       _.each(array, function(elem, index, array) {
-        if (!arr.includes(elem)) {
-          arr[arr.length] = elem;
+        let iterValue = iterator(elem);
+        if (!holderArr.includes(iterValue)) {
+          holderArr[holderArr.length] = iterValue;
+          result[result.length] = elem;
         }
       });
     } else {
       _.each(array, function(elem, index, array) {
-        if (!arr.includes(elem) && iterator(elem)) {
-          arr[arr.length] = elem;
+        if (!result.includes(elem)) {
+          result[result.length] = elem;
         }
       });
     }
-    return arr;
+    return result;
   }
 
 
   // Return the results of applying an iterator to each element.
-  _.map = function(collection, iterator) {
+  _.map = function(collection, iterator, context) {
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
