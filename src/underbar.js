@@ -67,7 +67,7 @@
 
 /////////////// THIS WORKS using for..in
 /*
-  _.each = function(collection, iterator) {
+  _.each = function(collection, iterator, context) {
     if (Array.isArray(collection)) {
       for (let i = 0; i < collection.length; i+=1) {
         iterator(collection[i], i, collection);
@@ -202,7 +202,7 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-    
+/*    ~~~~ this does not work. replaced with better code that uses _.each ~~~~~~
     if (accumulator === undefined) {
       accumulator = collection[0]
       for (let i = 1; i < collection.length; i+=1) {
@@ -216,17 +216,30 @@
 
     return accumulator;    
   };
+*/
+    var memo = arguments.length < 3;
+    _.each(collection, function(elem, index, collection){
+      if (memo) {
+        memo = false;
+        accumulator = elem;
+      } else {
+        accumulator = iterator(accumulator, elem, index, collection);
+      }
+    });
+    return accumulator;
+  };
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
-    return _.reduce(collection, function(wasFound, item) {
-      if (wasFound) {
-        return true;
-      }
-      return item === target;
-    }, false);
+    
+      return _.reduce(collection, function(wasFound, item) {
+        if (wasFound) { 
+          return true;
+        }
+        return item === target;
+      }, false);
   };
 
 
