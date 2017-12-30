@@ -157,7 +157,7 @@
     let result = [];
     
     _.each(collection, function(elem, index, collection) {
-      result[result.length] = (iterator(elem, index, collection));
+      result.push((iterator(elem, index, collection)));
     });
 
     return result;
@@ -234,24 +234,49 @@
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
     
-      return _.reduce(collection, function(wasFound, item) {
+      return _.reduce(collection, function(wasFound, item, index, collection) {
         if (wasFound) { 
           return true;
         }
-        return item === target;
+        return (item === target);
       }, false);
   };
 
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
+/*    if (iterator === undefined) {
+      iterator = _.identity;
+    }*/
+
+    return _.reduce(collection, function(memo, item, index, collection) {
+      if (!memo) {
+        return false;
+      } else {
+        if (iterator !== undefined) {
+          return iterator(item, index, collection) ? true : false;
+        } else {
+          return item ? true : false;
+        }
+      }
+    }, true);
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    return _.reduce(collection, function(memo, item, index, collection) {
+      if (memo) {
+        return true;
+      } else {
+        if (iterator !== undefined) {
+          return iterator(item, index, collection) ? true : false;
+        } else {
+          return item ? true : false;
+        }
+      }
+    }, false);
   };
 
 
@@ -274,11 +299,33 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    const objArgs = Array.from(arguments);
+
+    _.each(objArgs, function(arg, index) {
+      if (index > 0) {
+        for (let key in arg) {
+          obj[key] = arg[key];
+        }
+      }
+    });
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    const objArgs = Array.from(arguments);
+
+    _.each(objArgs, function(arg, index) {
+      if (index > 0) {
+        for (let key in arg) {
+          if (obj[key] === undefined) {
+            obj[key] = arg[key];
+          }
+        }
+      }
+    });
+    return obj;
   };
 
 
